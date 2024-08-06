@@ -30,43 +30,15 @@ class MainActivity : ComponentActivity() {
         setContent {
             MyShoppingListAppTheme {
                 // A surface container using the 'background' color from the theme
-                Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-
-                    var shoppingItems by remember{ mutableStateOf(listOf<ShoppingItem>())}
-
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.Center,
-                    ){
-                        Button(
-                            onClick = { /*TODO*/ },
-                            modifier = Modifier.align(Alignment.CenterHorizontally)
-                        ) {
-                            Text(text = "Add Item");
-                        }
-                        LazyColumn(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(16.dp))
-                        {
-                            items(shoppingItems){
-
-                            }
-                        }
-
-                    }
+                Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background)
+                {
+                    ShoppingListApp();
                 }
             }
         }
     }
 }
 
-data class ShoppingItem(val id: Int,
-                        var name: String,
-                        var quantity: Int,
-                        var isEditting: Boolean)
-{
 
-}
 
 

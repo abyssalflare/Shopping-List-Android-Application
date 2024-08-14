@@ -68,7 +68,43 @@ fun ShoppingListApp()
                 .padding(16.dp))
         {
             items(shoppingItems){
-                ShoppingListItem(item = it, {}, {})
+                item ->
+                if(item.isEditing) //if is editing, compose the shopping item editor composable
+                {
+                    ShoppingItemEditor(item = item, onEditComplete = {
+                        editedName, editedQuantity ->
+                        //here you are essentially reassigning the shoppingItems, by going through all of its items using .map,
+                        //then, using it to access the current one in the loop, duplicating its most updated version but setting
+                        //isEditing to false
+                        shoppingItems = shoppingItems.map{it.copy(isEditing = false)}
+
+                        //this line goes through our shopping list and checks each item's id
+                        //to see if it is the same as the current item we are editing
+                        val editedItem = shoppingItems.find{it.id == item.id} //return the item when the current edited item
+                                                                                //equals to it(which is the current item in this list)
+                        editedItem?.let{
+                            it.name = editedName
+                            it.quantity = editedQuantity
+                        }
+                    })
+                }
+                else //else, compose the base shopping list item composable
+                {
+                    ShoppingListItem(
+                        item = item,
+                        onEditClick = {
+                        //when we click on the edit button of a shopping list item, we need to know which item
+                        //this edit button belongs to
+                        //this line helps us find out which item we are editing and changing its "isEditing" boolean to true
+                        //when edit is clicked, go through all the items in the list using map, then, copy each item in the list
+                        //but change the "isEditing" boolean to be equals to the current looped item in the map function and the
+                        //current item in the lazy column
+                        shoppingItems = shoppingItems.map{it.copy(isEditing = it.id==item.id)}
+                    },
+                        onDeleteClick = {
+                        shoppingItems = shoppingItems - item;
+                    })
+                }
             }
         }
     }
@@ -193,17 +229,18 @@ fun ShoppingListItem(
             .fillMaxWidth()
             .border(
                 border = BorderStroke(2.dp, Color.Black),
-                shape = RoundedCornerShape(20)
-            )
+                shape = RoundedCornerShape(20),
+            ),
+            horizontalArrangement = Arrangement.Absolute.SpaceBetween
     ) {
         Text(text = item.name, modifier = Modifier.padding(8.dp));
         Text(text = "Qty: ${item.quantity}", modifier = Modifier.padding(8.dp))
         Row(modifier = Modifier.padding(8.dp))
         {
-            IconButton(onClick = {onEditClick}) {
+            IconButton(onClick = onEditClick) {
                 Icon(imageVector = Icons.Default.Edit, contentDescription = "the edit button")
             }
-            IconButton(onClick = {onDeleteClick}) {
+            IconButton(onClick = onDeleteClick) {
                 Icon(imageVector = Icons.Default.Delete, contentDescription = "the delete button")
             }
         }
